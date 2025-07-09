@@ -1,6 +1,3 @@
-// import battle func
-const { battle } = require("./functions.js");
-
 // filesystem access funcs
 const fs = require('node:fs');
 const path = require('node:path');
