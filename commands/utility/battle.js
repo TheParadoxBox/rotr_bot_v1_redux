@@ -57,11 +57,9 @@ module.exports = {
     
 	async execute(interaction) {
         // getters (what is this, java?)
-        const attacker = interaction.options.getString("attacker");
         const num_attackers = interaction.options.getInteger("num_attackers");
         const stance_attack = interaction.options.getInteger("stance_attack");
         const naval = interaction.options.getBoolean("naval");
-        const defender = interaction.options.getString("defender");
         const num_defenders = interaction.options.getInteger("num_defenders");
         const stance_defend = interaction.options.getInteger("stance_defend");
         const crits = interaction.options.getInteger("crits");
