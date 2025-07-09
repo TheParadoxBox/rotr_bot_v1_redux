@@ -1,6 +1,8 @@
 // v1 redux bot functions
 // written by paradox based on testfight.js
 
+// --- BATTLE FUNCTION ---
+
 // stances key:
 // atk:
 //   assault (0): standard attack
@@ -62,9 +64,6 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	// running troop counts
 	let atkTroops = atkStartTroops;
 	let defTroops = defStartTroops;
-	// running totals of the deaths for each side
-	let atkDeaths = 0;
-	let defDeaths = 0;
 	// running total of routed troops for each side
 	let atkRouts = 0;
 	let defRouts = 0;
@@ -115,24 +114,28 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 
 		// iterate through atk troops to see if shot hit/caused rout/missed
 		for (let i = 0; i < atkTroops; i++) {
-			if (Math.random() > (1 - currentAtkChanceHit)) {
-				currentDefDeaths++;
-				// additional chance to rout
-				if (Math.random() > (1 - defChanceRout)) {
-					currentDefRouts++;
+			if (currentDefDeaths + currentDefRouts < defTroops) { // don't try to kill troops that don't exist
+				if (Math.random() > (1 - currentAtkChanceHit)) {
+					currentDefDeaths++;
+					// additional chance to rout
+					if (Math.random() > (1 - defChanceRout)) {
+						currentDefRouts++;
+					}
 				}
-			}
+			} else { break; }
 		}
 
 		// same thing for def troops
 		for (let j = 0; j < defTroops; j++) {
-			if (Math.random() > (1 - currentDefChanceHit)) {
-				currentAtkDeaths++;
-				// additional chance to rout
-				if (Math.random() > (1 - atkChanceRout)) {
-					currentAtkRouts++;
+			if (currentAtkDeaths + currentAtkRouts < atkTroops) { // don't try to kill troops that don't exist
+				if (Math.random() > (1 - currentDefChanceHit)) {
+					currentAtkDeaths++;
+					// additional chance to rout
+					if (Math.random() > (1 - atkChanceRout)) {
+						currentAtkRouts++;
+					}
 				}
-			}
+			} else { break; }
 		}
 
 		atkTroops -= (currentAtkDeaths + currentAtkRouts);
@@ -143,9 +146,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 		// made provisions for this not to happen. as such, it is considered a draw.
 		// the defenders hold the state but both states now have 0 troops.
 
-		atkDeaths += currentAtkDeaths;
 		atkRouts += currentAtkRouts;
-		defDeaths += currentDefDeaths;
 		defRouts += currentDefRouts;
 		roundCount += 1;
 	}
@@ -154,4 +155,35 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	return [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount];
 }
 
-module.exports = { battle };
+// --- ANALYZE FUNCTION ---
+
+function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
+	const precision = 10000; // adjust to balance computation time vs. accuracy
+	let atkDeaths = 0;
+	let defDeaths = 0;
+	let atkTotalRouts = 0;
+	let defTotalRouts = 0;
+	let atkVictories = 0;
+	let rounds = 0;
+
+	for (let i = 0; i < precision; i++) {
+		let [atkTroops, defTroops, atkRouts, defRouts, roundCount] = battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 1); // never crit
+		if (atkTroops > 0) { atkVictories++; }
+		rounds += roundCount;
+		atkDeaths += atkStartTroops - atkTroops - atkRouts; // figured this out with algebra. i dont really understand the logic behind it but whatever
+		defDeaths += defStartTroops - defTroops - defRouts;
+		atkTotalRouts += atkRouts;
+		defTotalRouts += defRouts;
+	}
+
+	const avgAtkDeaths = Math.floor(atkDeaths / precision);
+	const avgDefDeaths = Math.floor(defDeaths / precision);
+	const avgAtkRouts = Math.floor(atkTotalRouts / precision);
+	const avgDefRouts = Math.floor(defTotalRouts / precision);
+	const avgRounds = Math.floor(rounds / precision);
+	const atkWinPct = Math.floor(atkVictories / precision * 100);
+
+	return [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct];
+}
+
+module.exports = { battle, analyze };
