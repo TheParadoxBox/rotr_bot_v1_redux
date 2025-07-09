@@ -12,7 +12,7 @@
 //   retreat (1): more routing
 //   entrench (2): no routing + higher kill chance
 
-export function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
+function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
 
     // ----- CONSTANTS -----
     // these aren't actually consts but they're used like them so they're here lol
@@ -130,3 +130,5 @@ export function battle(atkStartTroops, defStartTroops, atkStance, defStance, atk
     
     return [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount];
 }
+
+module.exports = battle;
