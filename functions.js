@@ -12,6 +12,8 @@
 //   retreat (1): more routing
 //   entrench (2): no routing + higher kill chance
 
+console.log("Battle function successfully imported");
+
 function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
 
     // ----- CONSTANTS -----
