@@ -5,11 +5,6 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("battle")
 		.setDescription("Simulate a battle between an attacking and defending state.")
-        .addStringOption(option =>
-            option.setName("attacker")
-                .setDescription("The name of the attacking state")
-                .setRequired(true)
-        )
         .addIntegerOption(option =>
             option.setName("num_attackers")
                 .setDescription("The number of attacking troops")
@@ -32,11 +27,6 @@ module.exports = {
                 .setRequired(true)
         )
 
-        .addStringOption(option =>
-            option.setName("defender")
-                .setDescription("The name of the defending state")
-                .setRequired(true)
-        )
         .addIntegerOption(option =>
             option.setName("num_defenders")
                 .setDescription("The number of defending troops")
@@ -52,6 +42,17 @@ module.exports = {
                     { name: "Retreat", value: 1 },
                     { name: "Entrench", value: 2 }
                 )
+        )
+        .addIntegerOption(option =>
+            option.setName("crits")
+                .setDescription("Whether or not to allow, disallow, or guarantee crits")
+                .setRequired(true)
+                .addChoices(
+                    { name: "Standard crits", value: 0 },
+                    { name: "No crits", value: 1 },
+                    { name: "Guarantee round 1 crit for attackers", value: 2 },
+                    { name: "Guarantee round 1 crit for defenders", value: 3 }
+                )
         ),
     
 	async execute(interaction) {
@@ -63,6 +64,7 @@ module.exports = {
         const defender = interaction.options.getString("defender");
         const num_defenders = interaction.options.getInteger("num_defenders");
         const stance_defend = interaction.options.getInteger("stance_defend");
+        const crits = interaction.options.getInteger("crits");
 
         // fancy stance names
         let fancyAtk;
@@ -91,8 +93,24 @@ module.exports = {
         }
         if (naval) fancyAtk += " via sea";
 
+        // fancy crit text
+        let fancyCrit = "";
+        switch(crits) {
+            // case 0;
+                // break;
+            case 1:
+                fancyCrit = "No crits";
+                break;
+            case 2:
+                fancyCrit = "Crit guaranteed for attackers";
+                break;
+            case 3:
+                fancyCrit = "Crit guaranteed for defenders";
+                break;
+        }
+
         // battle logic
-        const [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval);
+        const [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
         let outcome = "Stalemate!";
         if ( atkTroops > 0 ) { outcome = "Attackers take the state!" }
         else if ( defTroops > 0 ) { outcome = "Defenders keep the state!" }
@@ -105,7 +123,7 @@ module.exports = {
         // build the embed with the embed builder (waow)
 		const battleEmbed = new EmbedBuilder()
             .setColor(0x3c3b6e)
-            .setTitle(`${attacker} (${num_attackers}, ${fancyAtk}) vs. ${defender} (${num_defenders}, ${fancyDef})`)
+            .setTitle(`Battle: ${num_attackers} ${fancyAtk} vs. ${num_defenders} ${fancyDef}`)
             .setThumbnail(thumbnail)
             .addFields(
                 { name: "Remaining attackers", value: `${atkTroops}`, inline: true },
@@ -123,6 +141,7 @@ module.exports = {
             // .setImage(img) // will use later
             .setTimestamp()
 
+        if (fancyCrit != "") { battleEmbed.setDescription(fancyCrit); }
         await interaction.reply({ embeds: [battleEmbed] });
 	},
 };
