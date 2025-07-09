@@ -12,123 +12,146 @@
 //   retreat (1): more routing
 //   entrench (2): no routing + higher kill chance
 
-function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
+// allow crit key:
+// 0: standard crit behavior
+// 1: no crits
+// 2: guarantee round 1 crit for atk, then standard behavior
+// 3: guarantee round 1 crit for def, then standard behavior
 
-    // ----- CONSTANTS -----
-    // these aren't actually consts but they're used like them so they're here lol
+function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, allowCrit) {
 
-    let atkChanceHit = Math.floor(Math.random() * 41 + 10)/100;
-    if (atkNaval) { atkChanceHit *= 0.65; } // if naval invasion, lower attacker kill change
-    let atkChanceRout = 0.25;
+	// ----- CONSTANTS -----
+	// these aren't actually consts but they're used like them so they're here lol
 
-    let defChanceHit = Math.floor(Math.random() * 41 + 10)/100;
-    let defChanceRout = 0.25;
+	let atkChanceHit = Math.floor(Math.random() * 41 + 10)/100;
+	if (atkNaval) { atkChanceHit *= 0.65; } // if naval invasion, lower attacker kill change
+	let atkChanceRout = 0.25;
 
-
-
-    // ----- STANCE LOGIC -----
-    switch (atkStance) {
-        // case 0:		// assault; do nothing
-        // 	break;
-        case 1:		// raid
-            atkChanceRout *= 2;
-            break;
-        case 2:		// shock
-            atkChanceHit *= 1.15;
-            atkChanceRout = 0;
-            break;
-    }
-    switch(defStance) {
-        // case 0:	// hold; do nothing
-        // 	break;
-        case 1:		// retreat
-            defChanceRout *= 2;
-            break;
-        case 2:		// entrench
-            defChanceHit *= 1.15;
-            defChanceRout = 0;
-    }
+	let defChanceHit = Math.floor(Math.random() * 41 + 10)/100;
+	let defChanceRout = 0.25;
 
 
 
-    // ----- BATTLE LOOP -----
+	// ----- STANCE LOGIC -----
+	switch (atkStance) {
+		// case 0:		// assault; do nothing
+			// break;
+		case 1:		// raid
+			atkChanceRout *= 2;
+			break;
+		case 2:		// shock
+			atkChanceHit *= 1.15;
+			atkChanceRout = 0;
+			break;
+	}
+	switch(defStance) {
+		// case 0:	// hold; do nothing
+		// 	break;
+		case 1:		// retreat
+			defChanceRout *= 2;
+			break;
+		case 2:		// entrench
+			defChanceHit *= 1.15;
+			defChanceRout = 0;
+	}
 
-    // running troop counts
-    let atkTroops = atkStartTroops;
-    let defTroops = defStartTroops;
-    // running totals of the deaths for each side
-    let atkDeaths = 0;
-    let defDeaths = 0;
-    // running total of routed troops for each side
-    let atkRouts = 0;
-    let defRouts = 0;
-    // self-explanatory
-    let roundCount = 1;
-    let atkCritCount = 0;
-    let defCritCount = 0;
 
-    while (atkTroops > 0 && defTroops > 0) {
 
-        let currentAtkDeaths = 0;
-        let currentAtkRouts = 0;
-        let currentDefDeaths = 0;
-        let currentDefRouts = 0;
+	// ----- BATTLE LOOP -----
 
-        let currentAtkChanceHit = atkChanceHit;
-        let currentDefChanceHit = defChanceHit;
-        let atkCrit = false;
-        let defCrit = false;
+	// running troop counts
+	let atkTroops = atkStartTroops;
+	let defTroops = defStartTroops;
+	// running totals of the deaths for each side
+	let atkDeaths = 0;
+	let defDeaths = 0;
+	// running total of routed troops for each side
+	let atkRouts = 0;
+	let defRouts = 0;
+	// self-explanatory
+	let roundCount = 1;
+	let atkCritCount = 0;
+	let defCritCount = 0;
 
-        // crit logic
-        if (Math.random() < 0.025) {
-            atkCrit = true;
-            currentAtkChanceHit *= 1.5;
-            atkCritCount++;
-        } else if (Math.random() < 0.05) {
-            defCrit = true;
-            currentDefChanceHit *= 1.5;
-            defCritCount++;
-        }
+	while (atkTroops > 0 && defTroops > 0) {
 
-        // iterate through atk troops to see if shot hit/caused rout/missed
-        for (let i = 0; i < atkTroops; i++) {
-            if (Math.random() > (1 - currentAtkChanceHit)) {
-                currentDefDeaths++;
-                // additional chance to rout
-                if (Math.random() > (1 - defChanceRout)) {
-                    currentDefRouts++;
-                }
-            }
-        }
+		let currentAtkDeaths = 0;
+		let currentAtkRouts = 0;
+		let currentDefDeaths = 0;
+		let currentDefRouts = 0;
 
-        // same thing for def troops
-        for (let j = 0; j < defTroops; j++) {
-            if (Math.random() > (1 - currentDefChanceHit)) {
-                currentAtkDeaths++;
-                // additional chance to rout
-                if (Math.random() > (1 - atkChanceRout)) {
-                    currentAtkRouts++;
-                }
-            }
-        }
+		let currentAtkChanceHit = atkChanceHit;
+		let currentDefChanceHit = defChanceHit;
+		let atkCrit = false;
+		let defCrit = false;
 
-        atkTroops -= (currentAtkDeaths + currentAtkRouts);
-        defTroops -= (currentDefDeaths + currentDefRouts);
+		// crit logic
+		switch(allowCrit) {
+			case 0:		// std crits
+				if (Math.random() < 0.025) {
+					atkCrit = true;
+					currentAtkChanceHit *= 1.5;
+					atkCritCount++;
+				} else if (Math.random() < 0.05) {
+					defCrit = true;
+					currentDefChanceHit *= 1.5;
+					defCritCount++;
+				}
+				break;
+			// case 1:	// no crits; do nothing
+				// break
+			case 2:		// guaranteed round 1 atk crit
+				atkCrit = true;
+				currentAtkChanceHit *= 1.5;
+				atkCritCount++;
+				allowCrit = 0;
+				break;
+			case 3:		// guaranteed round 1 def crit
+				defCrit = true;
+				currentDefChanceHit *= 1.5;
+				defCritCount++;
+				allowCrit = 0;
+		}
 
-        // fun fact: there is a chance that gets smaller as troop counts go up that
-        // all combatants will die or be routed. no iteration of the code has ever
-        // made provisions for this not to happen. as such, it is considered a draw.
-        // the defenders hold the state but both states now have 0 troops.
+		// iterate through atk troops to see if shot hit/caused rout/missed
+		for (let i = 0; i < atkTroops; i++) {
+			if (Math.random() > (1 - currentAtkChanceHit)) {
+				currentDefDeaths++;
+				// additional chance to rout
+				if (Math.random() > (1 - defChanceRout)) {
+					currentDefRouts++;
+				}
+			}
+		}
 
-        atkDeaths += currentAtkDeaths;
-	    atkRouts += currentAtkRouts;
-	    defDeaths += currentDefDeaths;
-	    defRouts += currentDefRouts;
-    	roundCount += 1;
-    }
+		// same thing for def troops
+		for (let j = 0; j < defTroops; j++) {
+			if (Math.random() > (1 - currentDefChanceHit)) {
+				currentAtkDeaths++;
+				// additional chance to rout
+				if (Math.random() > (1 - atkChanceRout)) {
+					currentAtkRouts++;
+				}
+			}
+		}
 
-    
-    return [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount];
+		atkTroops -= (currentAtkDeaths + currentAtkRouts);
+		defTroops -= (currentDefDeaths + currentDefRouts);
+
+		// fun fact: there is a chance that gets smaller as troop counts go up that
+		// all combatants will die or be routed. no iteration of the code has ever
+		// made provisions for this not to happen. as such, it is considered a draw.
+		// the defenders hold the state but both states now have 0 troops.
+
+		atkDeaths += currentAtkDeaths;
+		atkRouts += currentAtkRouts;
+		defDeaths += currentDefDeaths;
+		defRouts += currentDefRouts;
+		roundCount += 1;
+	}
+
+	
+	return [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount];
 }
 
 module.exports = { battle };
