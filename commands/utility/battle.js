@@ -119,8 +119,8 @@ module.exports = {
         
         // set thumbnail
         let thumbnail;
-        if ( atkTroops > 0 ) { thumbnail = "https://TheParadoxBox.github.io/dump/atkWin.png" }
-        else { thumbnail = "https://TheParadoxBox.github.io/dump/defWin.png" }
+        if ( atkTroops > 0 ) { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/atkWin.png" }
+        else { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/defWin.png" }
 
         // build the embed with the embed builder (waow)
 		const battleEmbed = new EmbedBuilder()
