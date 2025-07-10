@@ -81,7 +81,10 @@ module.exports = {
 
         // analyze logic
         const [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct] = analyze(num_attackers, num_defenders, stance_attack, stance_defend, naval);
-        
+        console.log("[INFO] Analyze command ran");
+        console.log("Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval]);
+        console.log("Output: " + [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct]);
+
         // set thumbnail
         let thumbnail;
         if ( atkWinPct > 51 ) { thumbnail = "https://TheParadoxBox.github.io/dump/atkWinAnalyze.png" }

@@ -109,6 +109,10 @@ module.exports = {
 
         // battle logic
         const [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
+        console.log("[INFO] Battle command ran");
+        console.log("Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval, crits]);
+        console.log("Output: " + [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount]);
+        
         let outcome = "Stalemate!";
         if ( atkTroops > 0 ) { outcome = "Attackers take the state!" }
         else if ( defTroops > 0 ) { outcome = "Defenders keep the state!" }
