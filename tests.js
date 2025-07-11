@@ -11,38 +11,37 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) 
 
 	let atkChanceHit = Math.floor(Math.random() * 41 + 10)/100;
 	if (atkNaval) { atkChanceHit *= 0.65; } // if naval invasion, lower attacker kill change
-	let atkChanceRout = 0.25;
+	let atkChanceCauseRout = 0.25;
 
 	let defChanceHit = Math.floor(Math.random() * 41 + 10)/100;
-	let defChanceRout = 0.25;
+	let defChanceCauseRout = 0.25;
 
 
 
 	// ----- STANCE LOGIC -----
 	switch (atkStance) {
-		// case 0:		// assault; do nothing
+		// case 0:	// assault; do nothing
 			// break;
 		case 1:		// raid
-			if (defStance === 2) { atkChanceHit *= 1.25; }
-			else { atkChanceRout = 1; }
+			if (defStance === 2) { atkChanceHit *= 1.75; }
+			else { defChanceCauseRout = 1; }
 			break;
 		case 2:		// shock
-			if (defStance !== 1) { atkChanceHit *= 1.25; }
-			if (defStance === 0) { defChanceRout *= 3; }
-			atkChanceRout = 0;
+			if (defStance !== 1) { atkChanceCauseRout *= 3; }
+			defChanceCauseRout = 0;
 			break;
 	}
 	switch(defStance) {
 		// case 0:	// hold; do nothing
-		// 	break;
+			// break;
 		case 1:		// retreat
-			if (atkStance === 2) { atkChanceHit *= 1.25; }
-			else { defChanceRout = 1; }
+			if (atkStance === 2) { defChanceHit *= 1.75; }
+			else { atkChanceCauseRout = 1; }
 			break;
 		case 2:		// entrench
-			if (atkStance !== 1) { defChanceHit *= 1.25; }
-			if (atkStance === 0) { atkChanceRout *= 3; }
-			defChanceRout = 0;
+			if (atkStance !== 1) { defChanceCauseRout *= 3; }
+			atkChanceCauseRout = 0;
+			break;
 	}
 
 
@@ -74,7 +73,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) 
 				if (Math.random() > (1 - currentAtkChanceHit)) {
 					currentDefDeaths++;
 					// additional chance to rout
-					if (Math.random() > (1 - defChanceRout)) {
+					if (Math.random() > (1 - atkChanceCauseRout)) {
 						currentDefRouts++;
 					}
 				}
@@ -87,7 +86,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) 
 				if (Math.random() > (1 - currentDefChanceHit)) {
 					currentAtkDeaths++;
 					// additional chance to rout
-					if (Math.random() > (1 - atkChanceRout)) {
+					if (Math.random() > (1 - defChanceCauseRout)) {
 						currentAtkRouts++;
 					}
 				}
@@ -145,13 +144,14 @@ function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval)
 // args to pass
 const atkStartTroops = 100;
 const defStartTroops = 100;
-const atkStance = 0;
-const defStance = 0;
+const atkStance = 1;
+const defStance = 2;
 const atkNaval = 0;
 
 [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct] = analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval);
 [atkTroops, defTroops, atkRouts, defRouts, roundCount] = battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 0);
 
+console.log("Stances: " + atkStance + " vs. " + defStance);
 console.log("ANALYSIS");
 console.log("Avg atk deaths: " + avgAtkDeaths);
 console.log("Avg def deaths: " + avgDefDeaths);
