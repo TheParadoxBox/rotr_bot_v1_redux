@@ -4,15 +4,10 @@
 // --- BATTLE FUNCTION ---
 
 // stances key:
-// atk:
-//   assault (0): standard attack
-//   raid (1): more routing
-//   shock (2): no routing + higher kill chance
-//   naval attack (true): 65% kill chance
-// def:
-//   hold (0): standard defense
-//   retreat (1): more routing
-//   entrench (2): no routing + higher kill chance
+//   assault/hold (0): standard attack
+//   raid/retreat (1): guaranteed routing unless enemy uses 2, then higher kill chance
+//   shock/entrench (2): no routing + if enemy doesn't use 1, higher kill chance and increased enemy routing
+//   naval attack (true): 65% kill chance (atk only)
 
 // allow crit key:
 // 0: standard crit behavior
@@ -36,25 +31,28 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 
 	// ----- STANCE LOGIC -----
 	switch (atkStance) {
-		// case 0:		// assault; do nothing
+		// case 0:	// assault; do nothing
 			// break;
 		case 1:		// raid
-			atkChanceRout *= 2;
+			if (defStance === 2) { atkChanceHit *= 1.25; }
+			else { atkChanceRout = 1; }
 			break;
 		case 2:		// shock
-			atkChanceHit *= 1.15;
+			if (defStance !== 1) { atkChanceHit *= 1.25; defChanceRout *= 3; }
 			atkChanceRout = 0;
 			break;
 	}
 	switch(defStance) {
 		// case 0:	// hold; do nothing
-		// 	break;
+			// break;
 		case 1:		// retreat
-			defChanceRout *= 2;
+			if (atkStance === 2) { atkChanceHit *= 1.25; }
+			else { defChanceRout = 1; }
 			break;
 		case 2:		// entrench
-			defChanceHit *= 1.15;
+			if (atkStance !== 1) { defChanceHit *= 1.25; atkChanceRout *= 3; }
 			defChanceRout = 0;
+			break;
 	}
 
 
