@@ -10,6 +10,7 @@ module.exports = {
                 .setDescription("The number of attacking troops")
                 .setRequired(true)
                 .setMinValue(1)
+                .setMaxValue(10000)
         )
         .addIntegerOption(option =>
             option.setName("stance_attack")
@@ -32,6 +33,7 @@ module.exports = {
                 .setDescription("The number of defending troops")
                 .setRequired(true)
                 .setMinValue(1)
+                .setMaxValue(10000)
         )
         .addIntegerOption(option =>
             option.setName("stance_defend")
@@ -45,6 +47,9 @@ module.exports = {
         ),
     
 	async execute(interaction) {
+        // defer the reply until computation is done
+        await interaction.deferReply();
+
         // getters (what is this, java?)
         const num_attackers = interaction.options.getInteger("num_attackers");
         const stance_attack = interaction.options.getInteger("stance_attack");
@@ -95,6 +100,7 @@ module.exports = {
 		const battleEmbed = new EmbedBuilder()
             .setColor(0x3c3b6e)
             .setTitle(`Analysis: ${num_attackers} ${fancyAtk} vs. ${num_defenders} ${fancyDef}`)
+            .setDescription("Note: Analysis may not be 100% accurate to real-world results")
             .setThumbnail(thumbnail)
             .addFields(
                 { name: "Average attacker deaths", value: `${avgAtkDeaths}`, inline: true },
@@ -109,6 +115,7 @@ module.exports = {
             // .setImage(img) // will use later
             .setTimestamp()
 
-        await interaction.reply({ embeds: [battleEmbed] });
+        // update reply now that computation is done
+        await interaction.editReply({ content: null, embeds: [battleEmbed] });
 	},
 };

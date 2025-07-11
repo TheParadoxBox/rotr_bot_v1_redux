@@ -10,6 +10,7 @@ module.exports = {
                 .setDescription("The number of attacking troops")
                 .setRequired(true)
                 .setMinValue(1)
+                .setMaxValue(10000)
         )
         .addIntegerOption(option =>
             option.setName("stance_attack")
@@ -32,6 +33,7 @@ module.exports = {
                 .setDescription("The number of defending troops")
                 .setRequired(true)
                 .setMinValue(1)
+                .setMaxValue(10000)
         )
         .addIntegerOption(option =>
             option.setName("stance_defend")
@@ -56,6 +58,9 @@ module.exports = {
         ),
     
 	async execute(interaction) {
+        // defer the reply until computation is done
+        await interaction.deferReply();
+
         // getters (what is this, java?)
         const num_attackers = interaction.options.getInteger("num_attackers");
         const stance_attack = interaction.options.getInteger("stance_attack");
@@ -144,6 +149,7 @@ module.exports = {
             .setTimestamp()
 
         if (fancyCrit != "") { battleEmbed.setDescription(fancyCrit); }
-        await interaction.reply({ embeds: [battleEmbed] });
+        // update reply now that computation is done
+        await interaction.editReply({ content: null, embeds: [battleEmbed] });
 	},
 };
