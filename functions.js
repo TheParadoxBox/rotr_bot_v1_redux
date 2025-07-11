@@ -85,11 +85,12 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 		// crit logic
 		switch(allowCrit) {
 			case 0:		// std crits
-				if (Math.random() < 0.025) {
+				let critVal = Math.random();
+				if (critVal < 0.025) {
 					atkCrit = true;
 					currentAtkChanceHit *= 1.5;
 					atkCritCount++;
-				} else if (Math.random() < 0.05) {
+				} else if (critVal < 0.05) {
 					defCrit = true;
 					currentDefChanceHit *= 1.5;
 					defCritCount++;
