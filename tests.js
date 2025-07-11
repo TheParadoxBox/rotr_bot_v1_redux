@@ -4,7 +4,7 @@
 
 // --- BATTLE FUNCTION ---
 
-function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, allowCrit) {
+function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
 
 	// ----- CONSTANTS -----
 	// these aren't actually consts but they're used like them so they're here lol
@@ -57,8 +57,6 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	let defRouts = 0;
 	// self-explanatory
 	let roundCount = 1;
-	let atkCritCount = 0;
-	let defCritCount = 0;
 
 	while (atkTroops > 0 && defTroops > 0) {
 
@@ -69,36 +67,6 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 
 		let currentAtkChanceHit = atkChanceHit;
 		let currentDefChanceHit = defChanceHit;
-		let atkCrit = false;
-		let defCrit = false;
-
-		// crit logic
-		switch(allowCrit) {
-			case 0:		// std crits
-				if (Math.random() < 0.025) {
-					atkCrit = true;
-					currentAtkChanceHit *= 1.5;
-					atkCritCount++;
-				} else if (Math.random() < 0.05) {
-					defCrit = true;
-					currentDefChanceHit *= 1.5;
-					defCritCount++;
-				}
-				break;
-			// case 1:	// no crits; do nothing
-				// break
-			case 2:		// guaranteed round 1 atk crit
-				atkCrit = true;
-				currentAtkChanceHit *= 1.5;
-				atkCritCount++;
-				allowCrit = 0;
-				break;
-			case 3:		// guaranteed round 1 def crit
-				defCrit = true;
-				currentDefChanceHit *= 1.5;
-				defCritCount++;
-				allowCrit = 0;
-		}
 
 		// iterate through atk troops to see if shot hit/caused rout/missed
 		for (let i = 0; i < atkTroops; i++) {
@@ -140,7 +108,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	}
 
 	
-	return [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount];
+	return [atkTroops, defTroops, atkRouts, defRouts, roundCount];
 }
 
 // --- ANALYZE FUNCTION ---
@@ -155,7 +123,7 @@ function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval)
 	let rounds = 0;
 
 	for (let i = 0; i < precision; i++) {
-		let [atkTroops, defTroops, atkRouts, defRouts, roundCount] = battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 1); // never crit
+		let [atkTroops, defTroops, atkRouts, defRouts, roundCount] = battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval);
 		if (atkTroops > 0) { atkVictories++; }
 		rounds += roundCount;
 		atkDeaths += atkStartTroops - atkTroops - atkRouts; // figured this out with algebra. i dont really understand the logic behind it but whatever
