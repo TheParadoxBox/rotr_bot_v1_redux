@@ -66,7 +66,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	let atkRouts = 0;
 	let defRouts = 0;
 	// self-explanatory
-	let roundCount = 1;
+	let roundCount = 0;
 	let atkCritCount = 0;
 	let defCritCount = 0;
 
