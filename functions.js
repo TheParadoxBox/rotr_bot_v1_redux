@@ -4,15 +4,10 @@
 // --- BATTLE FUNCTION ---
 
 // stances key:
-// atk:
-//   assault (0): standard attack
-//   raid (1): more routing
-//   shock (2): no routing + higher kill chance
-//   naval attack (true): 65% kill chance
-// def:
-//   hold (0): standard defense
-//   retreat (1): more routing
-//   entrench (2): no routing + higher kill chance
+//   assault/hold (0): standard attack
+//   raid/retreat (1): guaranteed routing unless enemy uses 2, then higher kill chance
+//   shock/entrench (2): no routing + if enemy doesn't use 1, higher kill chance and increased enemy routing
+//   naval attack (true): 65% kill chance (atk only)
 
 // allow crit key:
 // 0: standard crit behavior
@@ -27,34 +22,37 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 
 	let atkChanceHit = Math.floor(Math.random() * 41 + 10)/100;
 	if (atkNaval) { atkChanceHit *= 0.65; } // if naval invasion, lower attacker kill change
-	let atkChanceRout = 0.25;
+	let atkChanceCauseRout = 0.25;
 
 	let defChanceHit = Math.floor(Math.random() * 41 + 10)/100;
-	let defChanceRout = 0.25;
+	let defChanceCauseRout = 0.25;
 
 
 
 	// ----- STANCE LOGIC -----
 	switch (atkStance) {
-		// case 0:		// assault; do nothing
+		// case 0:	// assault; do nothing
 			// break;
 		case 1:		// raid
-			atkChanceRout *= 2;
+			if (defStance === 2) { atkChanceHit *= 1.75; }
+			else { defChanceCauseRout = 1; }
 			break;
 		case 2:		// shock
-			atkChanceHit *= 1.15;
-			atkChanceRout = 0;
+			if (defStance !== 1) { atkChanceCauseRout *= 3; }
+			defChanceCauseRout = 0;
 			break;
 	}
 	switch(defStance) {
 		// case 0:	// hold; do nothing
-		// 	break;
+			// break;
 		case 1:		// retreat
-			defChanceRout *= 2;
+			if (atkStance === 2) { defChanceHit *= 1.75; }
+			else { atkChanceCauseRout = 1; }
 			break;
 		case 2:		// entrench
-			defChanceHit *= 1.15;
-			defChanceRout = 0;
+			if (atkStance !== 1) { defChanceCauseRout *= 3; }
+			atkChanceCauseRout = 0;
+			break;
 	}
 
 
@@ -87,11 +85,12 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 		// crit logic
 		switch(allowCrit) {
 			case 0:		// std crits
-				if (Math.random() < 0.025) {
+				let critVal = Math.random();
+				if (critVal < 0.025) {
 					atkCrit = true;
 					currentAtkChanceHit *= 1.5;
 					atkCritCount++;
-				} else if (Math.random() < 0.05) {
+				} else if (critVal < 0.05) {
 					defCrit = true;
 					currentDefChanceHit *= 1.5;
 					defCritCount++;
@@ -118,7 +117,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 				if (Math.random() > (1 - currentAtkChanceHit)) {
 					currentDefDeaths++;
 					// additional chance to rout
-					if (Math.random() > (1 - defChanceRout)) {
+					if (Math.random() > (1 - atkChanceCauseRout)) {
 						currentDefRouts++;
 					}
 				}
@@ -131,7 +130,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 				if (Math.random() > (1 - currentDefChanceHit)) {
 					currentAtkDeaths++;
 					// additional chance to rout
-					if (Math.random() > (1 - atkChanceRout)) {
+					if (Math.random() > (1 - defChanceCauseRout)) {
 						currentAtkRouts++;
 					}
 				}
@@ -158,7 +157,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 // --- ANALYZE FUNCTION ---
 
 function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
-	const precision = 10000; // adjust to balance computation time vs. accuracy
+	const precision = 5000; // adjust to balance computation time vs. accuracy
 	let atkDeaths = 0;
 	let defDeaths = 0;
 	let atkTotalRouts = 0;
