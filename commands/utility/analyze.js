@@ -86,9 +86,14 @@ module.exports = {
 
         // analyze logic
         const [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct] = analyze(num_attackers, num_defenders, stance_attack, stance_defend, naval);
-        console.log("[INFO] Analyze command ran");
-        console.log("Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval]);
-        console.log("Output: " + [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct]);
+        
+        // buncha logging shite
+        const date = new Date();
+        const time = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        const time_spacer = " ".repeat(time.length + 3);
+        console.log(`[${time}] ${interaction.user.tag} ran /analyze in ${interaction.guild?.name || 'DM'} #${interaction.channel?.name || 'DM'}`);
+        console.log(time_spacer + "Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval]);
+        console.log(time_spacer + "Output: " + [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct]);
 
         // set thumbnail
         let thumbnail;

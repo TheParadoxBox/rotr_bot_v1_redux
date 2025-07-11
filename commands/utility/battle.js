@@ -114,9 +114,14 @@ module.exports = {
 
         // battle logic
         const [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
-        console.log("[INFO] Battle command ran");
-        console.log("Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval, crits]);
-        console.log("Output: " + [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount]);
+        
+        // buncha logging shite
+        const date = new Date();
+        const time = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        const time_spacer = " ".repeat(time.length + 3);
+        console.log(`[${time}] ${interaction.user.tag} ran /battle in ${interaction.guild?.name || 'DM'} #${interaction.channel?.name || 'DM'}`);
+        console.log(time_spacer + "Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval, crits]);
+        console.log(time_spacer + "Output: " + [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount]);
         
         let outcome = "Stalemate!";
         if ( atkTroops > 0 ) { outcome = "Attackers take the state!" }
