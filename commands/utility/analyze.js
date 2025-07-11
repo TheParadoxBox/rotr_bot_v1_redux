@@ -87,8 +87,8 @@ module.exports = {
 
         // set thumbnail
         let thumbnail;
-        if ( atkWinPct > 51 ) { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/atkWinAnalyze.png" }
-        else if (atkWinPct < 49) { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/defWinAnalyze.png" }
+        if ( atkWinPct > 52 ) { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/atkWinAnalyze.png" }
+        else if (atkWinPct < 48) { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/defWinAnalyze.png" }
         else { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/unsureWinAnalyze.png "}
 
         // build the embed with the embed builder (waow)

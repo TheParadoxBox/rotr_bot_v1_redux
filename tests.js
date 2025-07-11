@@ -113,7 +113,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) 
 // --- ANALYZE FUNCTION ---
 
 function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
-	const precision = 10000; // adjust to balance computation time vs. accuracy
+	const precision = 5000; // adjust to balance computation time vs. accuracy
 	let atkDeaths = 0;
 	let defDeaths = 0;
 	let atkTotalRouts = 0;
@@ -144,8 +144,8 @@ function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval)
 // args to pass
 const atkStartTroops = 100;
 const defStartTroops = 100;
-const atkStance = 1;
-const defStance = 2;
+const atkStance = 0;
+const defStance = 0;
 const atkNaval = 0;
 
 [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct] = analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval);

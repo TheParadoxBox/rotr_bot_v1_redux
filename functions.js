@@ -157,7 +157,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 // --- ANALYZE FUNCTION ---
 
 function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval) {
-	const precision = 10000; // adjust to balance computation time vs. accuracy
+	const precision = 5000; // adjust to balance computation time vs. accuracy
 	let atkDeaths = 0;
 	let defDeaths = 0;
 	let atkTotalRouts = 0;
