@@ -41,7 +41,7 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     { name: "Hold", value: 0 },
-                    { name: "Retreat", value: 1 },
+                    { name: "Guerilla", value: 1 },
                     { name: "Entrench", value: 2 }
                 )
         )
@@ -113,7 +113,7 @@ module.exports = {
         }
 
         // battle logic
-        const [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
+        const [atkTroops, defTroops, atkRetreats, defRetreats, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
         
         // buncha logging shite
         const date = new Date();
@@ -121,7 +121,7 @@ module.exports = {
         const time_spacer = " ".repeat(time.length + 3);
         console.log(`[${time}] ${interaction.user.tag} ran /battle in ${interaction.guild?.name || 'DM'} #${interaction.channel?.name || 'DM'}`);
         console.log(time_spacer + "Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval, crits]);
-        console.log(time_spacer + "Output: " + [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount]);
+        console.log(time_spacer + "Output: " + [atkTroops, defTroops, atkRetreats, defRetreats, roundCount, atkCritCount, defCritCount]);
         
         let outcome = "Stalemate!";
         if ( atkTroops > 0 ) { outcome = "Attackers take the state!" }
@@ -141,8 +141,8 @@ module.exports = {
                 { name: "Remaining attackers", value: `${atkTroops}`, inline: true },
                 { name: "Remaining defenders", value: `${defTroops}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
-                { name: "Routed attackers", value: `${atkRouts}`, inline: true },
-                { name: "Routed defenders", value: `${defRouts}`, inline: true },
+                { name: "Retreated attackers", value: `${atkRetreats}`, inline: true },
+                { name: "Retreated defenders", value: `${defRetreats}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
                 { name: "Total attacker crits", value: `${atkCritCount}`, inline: true },
                 { name: "Total defender crits", value: `${defCritCount}`, inline: true },

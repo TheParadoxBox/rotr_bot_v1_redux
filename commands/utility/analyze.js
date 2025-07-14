@@ -41,7 +41,7 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     { name: "Hold", value: 0 },
-                    { name: "Retreat", value: 1 },
+                    { name: "Guerrilla", value: 1 },
                     { name: "Entrench", value: 2 }
                 )
         ),
@@ -76,7 +76,7 @@ module.exports = {
                 fancyDef = "Hold";
                 break;
             case 1:
-                fancyDef = "Retreat";
+                fancyDef = "Guerrilla";
                 break;
             case 2:
                 fancyDef = "Entrench";
@@ -85,7 +85,7 @@ module.exports = {
         if (naval) fancyAtk += " via sea";
 
         // analyze logic
-        const [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct] = analyze(num_attackers, num_defenders, stance_attack, stance_defend, naval);
+        const [avgAtkDeaths, avgDefDeaths, avgAtkRetreats, avgDefRetreats, avgRounds, atkWinPct] = analyze(num_attackers, num_defenders, stance_attack, stance_defend, naval);
         
         // buncha logging shite
         const date = new Date();
@@ -93,7 +93,7 @@ module.exports = {
         const time_spacer = " ".repeat(time.length + 3);
         console.log(`[${time}] ${interaction.user.tag} ran /analyze in ${interaction.guild?.name || 'DM'} #${interaction.channel?.name || 'DM'}`);
         console.log(time_spacer + "Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval]);
-        console.log(time_spacer + "Output: " + [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct]);
+        console.log(time_spacer + "Output: " + [avgAtkDeaths, avgDefDeaths, avgAtkRetreats, avgDefRetreats, avgRounds, atkWinPct]);
 
         // set thumbnail
         let thumbnail;
@@ -111,8 +111,8 @@ module.exports = {
                 { name: "Average attacker deaths", value: `${avgAtkDeaths}`, inline: true },
                 { name: "Average defender deaths", value: `${avgDefDeaths}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
-                { name: "Average routed attackers", value: `${avgAtkRouts}`, inline: true },
-                { name: "Average routed defenders", value: `${avgDefRouts}`, inline: true },
+                { name: "Average attacker retreats", value: `${avgAtkRetreats}`, inline: true },
+                { name: "Average defender retreats", value: `${avgDefRetreats}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
                 { name: "Average rounds fought", value: `${avgRounds}`, inline: true },
                 { name: "Attacker win probability", value: `${atkWinPct}%`, inline: true }

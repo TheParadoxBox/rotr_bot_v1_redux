@@ -5,8 +5,8 @@
 
 // stances key:
 //   assault/hold (0): standard attack
-//   raid/retreat (1): guaranteed routing unless enemy uses 2, then higher kill chance
-//   shock/entrench (2): no routing + if enemy doesn't use 1, higher kill chance and increased enemy routing
+//   raid/retreat (1): guaranteed retreating unless enemy uses 2, then higher kill chance
+//   shock/entrench (2): no retreating + if enemy doesn't use 1, higher kill chance and increased enemy retreating
 //   naval attack (true): 65% kill chance (atk only)
 
 // allow crit key:
@@ -22,10 +22,10 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 
 	let atkChanceHit = Math.floor(Math.random() * 41 + 10)/100;
 	if (atkNaval) { atkChanceHit *= 0.65; } // if naval invasion, lower attacker kill change
-	let atkChanceCauseRout = 0.25;
+	let atkChanceCauseRetreat = 0.25;
 
 	let defChanceHit = Math.floor(Math.random() * 41 + 10)/100;
-	let defChanceCauseRout = 0.25;
+	let defChanceCauseRetreat = 0.25;
 
 
 
@@ -35,23 +35,23 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 			// break;
 		case 1:		// raid
 			if (defStance === 2) { atkChanceHit *= 1.75; }
-			else { defChanceCauseRout = 1; }
+			else { defChanceCauseRetreat = 1; }
 			break;
 		case 2:		// shock
-			if (defStance !== 1) { atkChanceCauseRout *= 3; }
-			defChanceCauseRout = 0;
+			if (defStance !== 1) { atkChanceCauseRetreat *= 3; }
+			defChanceCauseRetreat = 0;
 			break;
 	}
 	switch(defStance) {
 		// case 0:	// hold; do nothing
 			// break;
-		case 1:		// retreat
+		case 1:		// guerrilla
 			if (atkStance === 2) { defChanceHit *= 1.75; }
-			else { atkChanceCauseRout = 1; }
+			else { atkChanceCauseRetreat = 1; }
 			break;
 		case 2:		// entrench
-			if (atkStance !== 1) { defChanceCauseRout *= 3; }
-			atkChanceCauseRout = 0;
+			if (atkStance !== 1) { defChanceCauseRetreat *= 3; }
+			atkChanceCauseRetreat = 0;
 			break;
 	}
 
@@ -62,9 +62,9 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	// running troop counts
 	let atkTroops = atkStartTroops;
 	let defTroops = defStartTroops;
-	// running total of routed troops for each side
-	let atkRouts = 0;
-	let defRouts = 0;
+	// running total of retreated troops for each side
+	let atkRetreats = 0;
+	let defRetreats = 0;
 	// self-explanatory
 	let roundCount = 0;
 	let atkCritCount = 0;
@@ -73,9 +73,9 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 	while (atkTroops > 0 && defTroops > 0) {
 
 		let currentAtkDeaths = 0;
-		let currentAtkRouts = 0;
+		let currentAtkRetreats = 0;
 		let currentDefDeaths = 0;
-		let currentDefRouts = 0;
+		let currentDefRetreats = 0;
 
 		let currentAtkChanceHit = atkChanceHit;
 		let currentDefChanceHit = defChanceHit;
@@ -111,14 +111,14 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 				allowCrit = 0;
 		}
 
-		// iterate through atk troops to see if shot hit/caused rout/missed
+		// iterate through atk troops to see if shot hit/caused retreat/missed
 		for (let i = 0; i < atkTroops; i++) {
-			if (currentDefDeaths + currentDefRouts < defTroops) { // don't try to kill troops that don't exist
+			if (currentDefDeaths + currentDefRetreats < defTroops) { // don't try to kill troops that don't exist
 				if (Math.random() > (1 - currentAtkChanceHit)) {
 					currentDefDeaths++;
-					// additional chance to rout
-					if (Math.random() > (1 - atkChanceCauseRout)) {
-						currentDefRouts++;
+					// additional chance to Retreat
+					if (Math.random() > (1 - atkChanceCauseRetreat)) {
+						currentDefRetreats++;
 					}
 				}
 			} else { break; }
@@ -126,32 +126,32 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 
 		// same thing for def troops
 		for (let j = 0; j < defTroops; j++) {
-			if (currentAtkDeaths + currentAtkRouts < atkTroops) { // don't try to kill troops that don't exist
+			if (currentAtkDeaths + currentAtkRetreats < atkTroops) { // don't try to kill troops that don't exist
 				if (Math.random() > (1 - currentDefChanceHit)) {
 					currentAtkDeaths++;
-					// additional chance to rout
-					if (Math.random() > (1 - defChanceCauseRout)) {
-						currentAtkRouts++;
+					// additional chance to retreat
+					if (Math.random() > (1 - defChanceCauseRetreat)) {
+						currentAtkRetreats++;
 					}
 				}
 			} else { break; }
 		}
 
-		atkTroops -= (currentAtkDeaths + currentAtkRouts);
-		defTroops -= (currentDefDeaths + currentDefRouts);
+		atkTroops -= (currentAtkDeaths + currentAtkRetreats);
+		defTroops -= (currentDefDeaths + currentDefRetreats);
 
 		// fun fact: there is a chance that gets smaller as troop counts go up that
-		// all combatants will die or be routed. no iteration of the code has ever
+		// all combatants will die or retreat. no iteration of the code has ever
 		// made provisions for this not to happen. as such, it is considered a draw.
 		// the defenders hold the state but both states now have 0 troops.
 
-		atkRouts += currentAtkRouts;
-		defRouts += currentDefRouts;
+		atkRetreats += currentAtkRetreats;
+		defRetreats += currentDefRetreats;
 		roundCount += 1;
 	}
 
 	
-	return [atkTroops, defTroops, atkRouts, defRouts, roundCount, atkCritCount, defCritCount];
+	return [atkTroops, defTroops, atkRetreats, defRetreats, roundCount, atkCritCount, defCritCount];
 }
 
 // --- ANALYZE FUNCTION ---
@@ -160,29 +160,29 @@ function analyze(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval)
 	const precision = 5000; // adjust to balance computation time vs. accuracy
 	let atkDeaths = 0;
 	let defDeaths = 0;
-	let atkTotalRouts = 0;
-	let defTotalRouts = 0;
+	let atkTotalRetreats = 0;
+	let defTotalRetreats = 0;
 	let atkVictories = 0;
 	let rounds = 0;
 
 	for (let i = 0; i < precision; i++) {
-		let [atkTroops, defTroops, atkRouts, defRouts, roundCount] = battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 1); // never crit
+		let [atkTroops, defTroops, atkRetreats, defRetreats, roundCount] = battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 1); // never crit
 		if (atkTroops > 0) { atkVictories++; }
 		rounds += roundCount;
-		atkDeaths += atkStartTroops - atkTroops - atkRouts; // figured this out with algebra. i dont really understand the logic behind it but whatever
-		defDeaths += defStartTroops - defTroops - defRouts;
-		atkTotalRouts += atkRouts;
-		defTotalRouts += defRouts;
+		atkDeaths += atkStartTroops - atkTroops - atkRetreats; // figured this out with algebra. i dont really understand the logic behind it but whatever
+		defDeaths += defStartTroops - defTroops - defRetreats;
+		atkTotalRetreats += atkRetreats;
+		defTotalRetreats += defRetreats;
 	}
 
 	const avgAtkDeaths = Math.floor(atkDeaths / precision);
 	const avgDefDeaths = Math.floor(defDeaths / precision);
-	const avgAtkRouts = Math.floor(atkTotalRouts / precision);
-	const avgDefRouts = Math.floor(defTotalRouts / precision);
+	const avgAtkRetreats = Math.floor(atkTotalRetreats / precision);
+	const avgDefRetreats = Math.floor(defTotalRetreats / precision);
 	const avgRounds = Math.floor(rounds / precision);
 	const atkWinPct = Math.floor(atkVictories / precision * 100);
 
-	return [avgAtkDeaths, avgDefDeaths, avgAtkRouts, avgDefRouts, avgRounds, atkWinPct];
+	return [avgAtkDeaths, avgDefDeaths, avgAtkRetreats, avgDefRetreats, avgRounds, atkWinPct];
 }
 
 module.exports = { battle, analyze };
