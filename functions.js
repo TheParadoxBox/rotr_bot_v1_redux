@@ -6,7 +6,7 @@
 // stances key:
 //   assault/hold (0): standard attack
 //   raid/retreat (1): guaranteed retreating unless enemy uses 2, then higher kill chance
-//   shock/entrench (2): no retreating + if enemy doesn't use 1, higher kill chance and increased enemy retreating
+//   shock/entrench (2): no retreating + if enemy doesn't use 1, increased enemy retreating
 //   naval attack (true): 65% kill chance (atk only)
 
 // allow crit key:
