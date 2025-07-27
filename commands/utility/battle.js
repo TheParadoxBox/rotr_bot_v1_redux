@@ -114,6 +114,10 @@ module.exports = {
 
         // battle logic
         const [atkTroops, defTroops, atkRetreats, defRetreats, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
+
+        // stupid thing that syfi wanted
+        const atkDed = num_attackers - atkTroops;
+        const defDed = num_defenders - defTroops;
         
         // buncha logging shite
         const date = new Date();
@@ -143,6 +147,9 @@ module.exports = {
                 { name: "\u200B", value: "\u200B" },
                 { name: "Retreated attackers", value: `${atkRetreats}`, inline: true },
                 { name: "Retreated defenders", value: `${defRetreats}`, inline: true },
+                { name: "\u200B", value: "\u200B" },
+                { name: "Total attackers lost", value: `${num_attackers - atkTroops}`, inline: true },
+                { name: "Total defenders lost", value: `${num_defenders - defTroops}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
                 { name: "Total attacker crits", value: `${atkCritCount}`, inline: true },
                 { name: "Total defender crits", value: `${defCritCount}`, inline: true },
