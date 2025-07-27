@@ -88,7 +88,7 @@ module.exports = {
                 fancyDef = "Hold";
                 break;
             case 1:
-                fancyDef = "Retreat";
+                fancyDef = "Guerrilla";
                 break;
             case 2:
                 fancyDef = "Entrench";
