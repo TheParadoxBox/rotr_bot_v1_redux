@@ -116,8 +116,8 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 			if (currentDefDeaths + currentDefRetreats < defTroops) { // don't try to kill troops that don't exist
 				if (Math.random() > (1 - currentAtkChanceHit)) {
 					currentDefDeaths++;
-					// additional chance to Retreat
-					if (Math.random() > (1 - atkChanceCauseRetreat)) {
+					// additional chance to retreat if there are still troops
+					if (Math.random() > (1 - atkChanceCauseRetreat) && currentDefDeaths + currentDefRetreats < defTroops) {
 						currentDefRetreats++;
 					}
 				}
@@ -130,7 +130,7 @@ function battle(atkStartTroops, defStartTroops, atkStance, defStance, atkNaval, 
 				if (Math.random() > (1 - currentDefChanceHit)) {
 					currentAtkDeaths++;
 					// additional chance to retreat
-					if (Math.random() > (1 - defChanceCauseRetreat)) {
+					if (Math.random() > (1 - defChanceCauseRetreat) && currentAtkDeaths + currentAtkRetreats < atkTroops) {
 						currentAtkRetreats++;
 					}
 				}
